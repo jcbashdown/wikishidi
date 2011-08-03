@@ -1,0 +1,16 @@
+/* 
+    Document   : wikistorm
+    Created on : 25-Jul-2011, 13:06:32
+    Author     : jacob
+    Description:
+    basic reused styles for wikishidi plugin
+*/
+
+root { 
+    display: block;
+}
+div.centered{
+    width: 300px;
+    margin:0 auto 0 auto;
+}
+

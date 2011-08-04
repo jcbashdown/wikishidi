@@ -13,20 +13,21 @@ class User_Controller extends Main_Controller {
 
         public function signup($user_id = false, $saved = false )
 	{
+//      TODO - rid of edit through existing user id
         $this->session->create();
         $this->template->content = new View('wikishidi/signup');
         $this->template->header->header_block = $this->themes->header_block();
         $this->template->content->this_page = "signup";
 
-        if ($user_id)
-        {
-            $user_exists = ORM::factory('user')->find($user_id);
-            if ( ! $user_exists->loaded)
-            {
-                // Redirect
-                url::redirect(url::site().'admin/users/');
-            }
-        }
+//        if ($user_id)
+//        {
+//            $user_exists = ORM::factory('user')->find($user_id);
+//            if ( ! $user_exists->loaded)
+//            {
+//                // Redirect
+//                url::redirect(url::site().'admin/users/');
+//            }
+//        }
 
         // setup and initialize form field names
         $form = array
@@ -87,42 +88,27 @@ class User_Controller extends Main_Controller {
                 $user->name = $post->name;
                 $user->email = $post->email;
                 $user->notify = $post->notify;
+                $user->username = $post->username;
+                $user->password = $post->password;
 
-                // Existing User??
-                if ($user->loaded==true)
-                {
-                    // Prevent modification of the main admin account username or role
-                    if ($user->id != 1)
-                    {
-                        $user->username = $post->username;
+                // Add New Roles
+                $user->add(ORM::factory('role', 'login'));
+                $user->add(ORM::factory('role', $post->role));
 
-                        // Remove Old Roles
-                        foreach($user->roles as $role)
-                        {
-                            $user->remove($role);
-                        }
-
-                        // Add New Roles
-                        $user->add(ORM::factory('role', 'login'));
-                        $user->add(ORM::factory('role', $post->role));
-                    }
-
-                    $post->password !='' ? $user->password=$post->password : '';
-                }
-                // New User
-                else
-                {
-                    $user->username = $post->username;
-                    $user->password = $post->password;
-
-                    // Add New Roles
-                    $user->add(ORM::factory('role', 'login'));
-                    $user->add(ORM::factory('role', $post->role));
-                }
-//              TODO - if email fails then redirect with errors and don't save record
-                $this->_send_email($user->email);
-//              TODO make sure password not stored plain text and account not yet active
+                // TODO make sure password not stored plain text and account not yet active
                 $user->save();
+
+                // Create wikishidi user
+                $wikishidi_user = ORM::factory('wikishidi_user',$user_id);
+                $wikishidi_user->user_id=$user->id;
+                $wikishidi_user->confirm_code=text::random('alnum', 20);;
+                $wikishidi_user->confirmed=FALSE;
+                $wikishidi_user->reputation_people=0;
+                $wikishidi_user->reputation_auto=0;
+                $wikishidi_user->reputation_manual=0;
+
+                // TODO - if email fails then redirect with errors and don't save record
+                $this->_send_email($user->email);
 
                 // Redirect - do this here as should be part of session. TODO some session ness?
                 $this->session->set('alert_email', $user->email);

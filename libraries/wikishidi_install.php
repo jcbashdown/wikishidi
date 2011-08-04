@@ -28,11 +28,12 @@ class Wikishidi_Install {
                                 `confirmed` TINYINT(4) NOT NULL DEFAULT '0' COMMENT 'confirmation code to activate user account',
 				PRIMARY KEY (id)
                                 reputation_people INT NOT NULL COMMENT 'reputation derived from user votes counter cache',
-                                reputation_auto INT NOT NULL COMMENT 'reputation derived from similar reports/auto verify counter cache'
+                                reputation_auto INT NOT NULL COMMENT 'reputation derived from similar reports - auto verified counter cache'
+                                reputation_manual INT NOT NULL COMMENT 'reputation derived from similar reports - manually selected counter cache'
 			);");
 //                TODO - user_votes join table - self ref user to user_report - more than one rel because through - to user and report..? No - bad normalisation cache with existing rels from recieving report - ORM
 		$this->db->query("
-			CREATE TABLE IF NOT EXISTS `".Kohana::config('database.default.table_prefix')."user_votes`
+			CREATE TABLE IF NOT EXISTS `".Kohana::config('database.default.table_prefix')."user_vote`
 			(
 				`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 				`wikishidi_user_id` INT NOT NULL COMMENT 'foreign key user_id',
@@ -46,7 +47,7 @@ class Wikishidi_Install {
 			);");
 //                TODO - report_votes - self ref report to report orm - votes in cases - maybe floats not bool - see storm plan - cache with existing user rel from receiving report...
 		$this->db->query("
-			CREATE TABLE IF NOT EXISTS `".Kohana::config('database.default.table_prefix')."incident_votes`
+			CREATE TABLE IF NOT EXISTS `".Kohana::config('database.default.table_prefix')."incident_vote`
 			(
 				`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 				`author_id` INT NOT NULL COMMENT 'foreign key user_id - will be the auto user if automatic',

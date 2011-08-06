@@ -94,23 +94,29 @@ class User_Controller extends Main_Controller {
                 // Add New Roles
                 $user->add(ORM::factory('role', 'login'));
                 $user->add(ORM::factory('role', $post->role));
-
-                // TODO make sure password not stored plain text and account not yet active
+                
                 $user->save();
 
-                // Create wikishidi user
+                // Create wikishidi user TODO Do this in email send?
                 $wikishidi_user = ORM::factory('wikishidi_user',$user_id);
+//                do with add like role
                 $wikishidi_user->user_id=$user->id;
                 $wikishidi_user->confirm_code=text::random('alnum', 20);;
                 $wikishidi_user->confirmed=FALSE;
                 $wikishidi_user->reputation_people=0;
                 $wikishidi_user->reputation_auto=0;
                 $wikishidi_user->reputation_manual=0;
-
+                $wikishidi_user->save();
                 // TODO - if email fails then redirect with errors and don't save record
-                $this->_send_email($user->email);
+                if(!($this->_send_email($user->email, $wikishidi_user->confirm_code))){
+                  $wikishidi_user->delete();
+                  $user->delete();
+//                  TODO redirect
+                }
 
                 // Redirect - do this here as should be part of session. TODO some session ness?
+                // Is this correct? Should we just be going to that view or to confirm action (in which
+                // case change name... Or are are going to view here in which case should all be one page
                 $this->session->set('alert_email', $user->email);
                 $this->template->content = new View('wikishidi/confirm');
                 $this->template->content->this_page = "confirm";
@@ -176,10 +182,10 @@ class User_Controller extends Main_Controller {
         $this->template->content->role_array = $role_array;
 	}
 
-        private function _send_email($email)
+        private function _send_email($email, $code)
         {
           // Email Alerts, Confirmation Code
-          $code = text::random('alnum', 20);
+//          $code = text::random('alnum', 20);
 
           $settings = kohana::config('settings');
 

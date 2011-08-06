@@ -1,0 +1,56 @@
+***Sign up***
+
+sign up page
+
+fill form
+
+errors?
+
+fill form
+
+make user
+
+send email and make shidi user
+
+errors?
+
+delete user and return to form with sign up is not working at this time
+
+fill form 
+
+redirect to confirm page --- Go to verify method
+
+fill form                --- Go from line 23
+
+redirect to verify method -- Done!
+
+errors?
+
+account confirmation is not working at this time
+
+fill form
+
+redirect to verify method
+
+redirect from verify to confirmed view
+
+Done!
+
+VAGUE
+
+***Login***
+
+if has wikishidi user
+
+reduced admin?
+
+vote buttons?
+
+TODO - can we give admins voting rights? Link to non admin accounts (verif as such)
+
+TODO Analysis page - provide transparency
+
+TODO - Analyser methods - crud for votes
+                        - background job for auto votes
+                        - auto running and storage of output for verified - add counter cache of votes (immediate) and score (outcomes of pagerank weighting etc) (auto run to work out - backgroun) to incident model... wikishidi_incident model...
+
